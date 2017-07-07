@@ -4,7 +4,18 @@
 
    <h2>Редактировать статью</h2>
 
-      <form method="post" action="{{ route('editarticles') }}">
+   @if(count($errors) > 0)
+      <div class="alert alert-danger">
+         <ul>
+            @foreach($errors->all() as $error)
+               <li>{{ $error }}</li>
+            @endforeach
+         </ul>
+      </div>
+   @endif
+
+
+   <form method="post" action="{{ route('editarticles') }}">
          {{ csrf_field() }}
          <input type="hidden" name="id" value="{{ $article->id or "null" }}">
          <div class="form-group">
@@ -14,12 +25,15 @@
             <textarea name="text" class="form-control" rows="5">{{ $article->text or "Не выбрана статья для редактирования" }}</textarea>
          </div>
 
-
          @if($categories_name != null)
          <div class="form-group">
             <select name="categories">
-               <option selected="selected">Выберите категорию</option>
+
                @foreach($categories_name as $var)
+                  @if($article->categories_id == $var->id)
+                     <option selected="selected">{{ $var->name }}</option>
+                  @endif
+
                   <option value="{{ $var->id }}">{{ $var->name }}</option>
                @endforeach
             </select>
@@ -71,6 +85,17 @@
 
    <h3>Добовить коментарий</h3>
 
+   @if(count($errors) > 0)
+      <div class="alert alert-danger">
+         <ul>
+            @foreach($errors->all() as $error)
+               <li>{{ $error }}</li>
+            @endforeach
+         </ul>
+      </div>
+   @endif
+
+
    <form method="post" action="{{ route('newcomment') }}">
       {{ csrf_field() }}
 
@@ -80,7 +105,7 @@
          <input class="form-control" name="name" value="" placeholder="Название коментария">
       </div>
       <div class="form-group">
-         <textarea name="text" class="form-control" rows="3" placeholder="Коментарий"></textarea>
+         <textarea name="text2" class="form-control" rows="3" placeholder="Коментарий"></textarea>
       </div>
 
 

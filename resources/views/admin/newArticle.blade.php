@@ -7,13 +7,30 @@
 
 
     <h1 class="text-center">New Article</h1>
-    <form method="post" action="{{ route('newarticle') }}">
+
+
+        @if(count($errors) > 0)
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+
+        <form method="post" action="{{ route('newarticle') }}">
         {{ csrf_field() }}
         <div class="form-group">
             <input class="form-control" name="name" value="{{ old('name') }}" placeholder="Название статьи">
+            <span style="font-size: 12px;">* поле обязательное для ввода</span>
+
         </div>
         <div class="form-group">
             <textarea name="text" class="form-control" rows="5">{{ old("text") }}</textarea>
+            <span style="font-size: 12px;">* поле обязательное для ввода</span>
+
         </div>
 
         <div class="form-group">
@@ -23,11 +40,14 @@
 
         <div class="form-group">
             <select name="categories">
-                <option selected="selected">Выберите категорию</option>
+                <option selected="selected" value="{{ $id=0 }}">Выберите категорию</option>
                 @foreach($categories_name as $var)
                     <option value="{{ $var->id }}">{{ $var->name }}</option>
                 @endforeach
             </select>
+            <br>
+            <span style="font-size: 12px;">* поле обязательное для ввода/выбора</span>
+
         </div>
 
 
