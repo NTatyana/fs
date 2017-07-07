@@ -15,10 +15,6 @@ use App\article;
 class ArticleController extends Controller
 {
 
-//Declear variables (обьявление переменных)
-
-//    public $lastId = 0;
-
 
 // Create new article and save it
 
@@ -45,14 +41,36 @@ class ArticleController extends Controller
         $categorie = Categorie::all();
         $comments = Comment::all();
 
-
-
         $indexTag = Tag::all()->last()->id;
-//        dd($indexTag);
 
 
         if ($request->isMethod('post')) {
             $request->flash();
+
+
+
+
+            $rules = [
+
+                'name'=>'required|max:100|unique:articles,name',
+                'text'=>'required',
+                'categories'=>'required',
+
+            ];
+
+            $massages =[
+
+                'required' => 'Поле :attribute обязательно к заполнению',
+                'name.max' => 'Поле :attribute не может превышать 100 символов',
+                'name.unique' => 'Имя существует. Введите другое значение поля :attribute',
+
+            ];
+
+
+            $this->validate($request,$rules,$massages);
+
+
+
 
             $newArticle = new article();
 
@@ -123,14 +141,11 @@ class ArticleController extends Controller
 
             $comments = $article->comments;
 
-
-
         } else {
             $tags = null;
             $categorie = null;
             $article = article::all()->last();
             $comments = $article->comments;
-
 
         }
 
@@ -153,21 +168,34 @@ class ArticleController extends Controller
         $categorie = Categorie::all();
         $comments = Comment::all();
 
-
-        $array = array(
-            'categories_name' => $categorie,
-            'tags_name' => $tags,
-            'comments' => $comments
-
-        );
-
         $indexTag = Tag::all()->last()->id;
 
 
         if ($request->isMethod('post')) {
+
+            $rules = [
+
+                'name'=>'required|max:100',
+
+            ];
+
+            $massages =[
+
+                'required' => 'Поле :attribute обязательно к заполнению',
+                'name.max' => 'Поле :attribute не может превышать 100 символов',
+
+            ];
+
+
+            $this->validate($request,$rules,$massages);
+
+
+
+
             $request->flash();
 
             $idArticle = $request->input('id');
+
 
             $editArticle = article::find($idArticle);
 
@@ -175,20 +203,30 @@ class ArticleController extends Controller
             $editArticle->text = $request->input('text');
             $editArticle->categories_id = $request->input('categories');
 
+
             for ($i = 1; $i <= $indexTag; $i++) {
-//                dd($indexTag);
+//                dd(Article_Tag::all());
 
                 if ($request->input('checkbox'.$i) != null) {
                     $newArticleTags = new Article_Tag();
                     $newArticleTags->article_id = $idArticle->id;
                     $newArticleTags->tag_id = $request->input('checkbox'.$i);
                     $newArticleTags->save();
-                }
+                   }
+
             }
 
             $editArticle->save();
 
         }
+
+        $array = array(
+            'categories_name' => $categorie,
+            'tags_name' => $tags,
+            'comments' => $comments,
+
+        );
+
 
         return view('admin.EditArticle', $array)->with('article', $editArticle);
     }
@@ -204,7 +242,7 @@ class ArticleController extends Controller
         $array = array(
             'categories_name' => $categorie,
             'tags_name' => $tags,
-            'comments' => $comments
+            'comments' => $comments,
 
         );
 
@@ -247,12 +285,34 @@ class ArticleController extends Controller
     public function saveComment(Request $request){
 
         if ($request->isMethod('post')) {
+
+            $rules = [
+
+                'name'=>'max:100',
+                'text2'=>'required',
+
+            ];
+
+            $massages =[
+
+                'required' => 'Поле :attribute обязательно к заполнению',
+                'name.max' => 'Поле :attribute не может превышать 100 символов',
+                'name.unique' => 'Имя существует. Введите другое значение поля :attribute',
+
+            ];
+
+
+            $this->validate($request,$rules,$massages);
+
+
+
+
             $request->flash();
 
             $newComment = new Comment();
 
             $newComment->name = $request->input('name');
-            $newComment->text = $request->input('text');
+            $newComment->text = $request->input('text2');
             $newComment->article_id = $request->input('artId');
 
             $newComment->save();
@@ -316,6 +376,27 @@ class ArticleController extends Controller
 
 
         if ($request->isMethod('post')) {
+
+            $rules = [
+
+                'name'=>'required|max:50|unique:tags,name',
+
+            ];
+
+            $massages =[
+
+                'required' => 'Поле :attribute обязательно к заполнению',
+                'name.max' => 'Поле :attribute не может превышать 50 символов',
+                'name.unique' => 'Имя существует. Введите другое значение поля :attribute',
+
+            ];
+
+
+            $this->validate($request,$rules,$massages);
+
+
+
+
             $request->flash();
 
             $newTag = new Tag();
@@ -359,6 +440,23 @@ class ArticleController extends Controller
 
 
         if ($request->isMethod('post')) {
+
+            $rules = [
+
+                'name'=>'required|max:50',
+            ];
+
+            $massages =[
+
+                'required' => 'Поле :attribute обязательно к заполнению',
+                'name.max' => 'Поле :attribute не может превышать 50 символов',
+
+            ];
+
+
+            $this->validate($request,$rules,$massages);
+
+
             $request->flash();
 
             $idOldTag = $request->input('id');
@@ -420,12 +518,35 @@ class ArticleController extends Controller
 
 
             if ($request->isMethod('post')) {
+
+                $rules = [
+
+                    'name'=>'required|max:50|unique:categories,name',
+
+                ];
+
+                $massages =[
+
+                    'required' => 'Поле :attribute обязательно к заполнению',
+                    'name.max' => 'Поле :attribute не может превышать 50 символов',
+                    'name.unique' => 'Имя существует. Введите другое значение поля :attribute',
+
+                ];
+
+
+                $this->validate($request,$rules,$massages);
+
+
+
+
                 $request->flash();
+
 
                 $newCategorie = new Categorie();
 
                 $newCategorie->name = $request->input('name');
                 $newCategorie->text = $request->input('text');
+
 
                 $newCategorie->save();
 
@@ -452,7 +573,6 @@ class ArticleController extends Controller
     }
 
 
-    //  для коментирования gitHub
 
 
 
